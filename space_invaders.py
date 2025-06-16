@@ -89,10 +89,16 @@ class Aliens(pygame.sprite.Sprite):
         self.image = pygame.image.load("img/alien" + str(random.randint(1, 5)) + ".png")
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
+        self.move_direction = 1
+        self.move_counter = 0 
+        self.move_speed = 2
     
     def update(self):
-        pass 
-
+        self.rect.x += self.move_direction * self.move_speed
+        self.move_counter += self.move_speed
+        if abs(self.move_counter) > 60: 
+            self.move_direction *= -1 
+            self.move_counter *= -1
 
 
 #Create sprite groups
