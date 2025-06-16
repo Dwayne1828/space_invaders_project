@@ -82,6 +82,8 @@ class Bullet(pygame.sprite.Sprite):
         self.rect.y -= 5
         if self.rect.bottom < 0: 
             self.kill()
+        if pygame.sprite.spritecollide(self, aliens_group, True):
+            self.kill()
 
 
 #Create the aliens class
@@ -114,6 +116,9 @@ class AlienBullets(pygame.sprite.Sprite):
     def update(self):
         self.rect.y += 3
         if self.rect.bottom > screen_height: 
+            self.kill()
+        if pygame.sprite.spritecollide(self, spaceship_group, False):
+            spaceship.health_remaining -= 1
             self.kill()
 
 
