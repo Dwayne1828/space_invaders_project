@@ -13,6 +13,11 @@ screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption("Space Invaders")
 
 
+#Define colors
+red = (225, 0, 0)
+green = (0, 225, 0 )
+
+
 #Load background image
 bg = pygame.image.load("img/bg.png")
 
@@ -22,11 +27,13 @@ def draw_bg():
 
 #Create the spaceship class
 class Spaceship(pygame.sprite.Sprite):
-    def __init__(self, x, y):
+    def __init__(self, x, y, health):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load("img/spaceship.png")
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
+        self.health_start = health
+        self.health_remaining = health
 
     def update(self):
         #Set Movement Speed
@@ -37,12 +44,20 @@ class Spaceship(pygame.sprite.Sprite):
         if key[pygame.K_RIGHT] and self.rect.right < screen_width: 
             self.rect.x += speed
 
+        #health bar
+        pygame.draw.rect(screen, red, (self.rect.x, (self.rect.y + 70), self.rect.width, 10))
+        if self.health_remaining > 0: 
+            pygame.draw.rect(screen, green, (self.rect.x, (self.rect.y + 70), 
+                                             int(self.rect.width * (self.health_remaining / self.health_start)), 10))
+
+
+
 #Create sprite groups
 spaceship_group = pygame.sprite.Group()
 
 
 #Create the spaceship object
-spaceship = Spaceship(int(screen_width / 2), screen_height - 100)
+spaceship = Spaceship(int(screen_width / 2), screen_height - 100, 3)
 spaceship_group.add(spaceship)
 
 
