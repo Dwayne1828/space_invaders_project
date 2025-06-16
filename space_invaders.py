@@ -38,7 +38,7 @@ laser_fx.set_volume(0.25)
 #Define global variables
 rows = 5
 cols = 5
-alien_cooldown = 500  # milliseconds
+alien_cooldown = 300 # milliseconds
 last_alien_shot = pygame.time.get_ticks()
 countdown = 3 
 last_count = pygame.time.get_ticks()
@@ -174,7 +174,7 @@ class AlienBullets(pygame.sprite.Sprite):
         self.rect.center = (x, y)
     
     def update(self):
-        self.rect.y += 3
+        self.rect.y += 8
         if self.rect.bottom > screen_height: 
             self.kill()
         if pygame.sprite.spritecollide(self, spaceship_group, False, pygame.sprite.collide_mask):
@@ -228,6 +228,8 @@ explosion_group = pygame.sprite.Group()
 
 def create_aliens():
     alien_scale = max(60 - (rows * 2), 30)  # Minimum size of 30 pixels
+    global alien_cooldown 
+    alien_cooldown = 500
 
     for row in range(rows):
         for col in range(cols): 
@@ -251,6 +253,12 @@ while run:
     draw_bg()
 
     if countdown == 0: 
+        #Firing of enemies bullet adjusts based of aliens left
+        if len(aliens_group) <= 5:
+            alien_cooldown = 1500
+        else:
+            alien_cooldown = alien_cooldown
+
         #Random alien bullet
         time_now = pygame.time.get_ticks()
         #shoot
@@ -259,6 +267,7 @@ while run:
             alien_bullet = AlienBullets(attacking_alien.rect.centerx, attacking_alien.rect.bottom)
             alien_bullet_group.add(alien_bullet)
             last_alien_shot = time_now
+        
 
         for event in pygame.event.get():
             if event.type == QUIT:
