@@ -41,6 +41,7 @@ alien_cooldown = 500  # milliseconds
 last_alien_shot = pygame.time.get_ticks()
 countdown = 3 
 last_count = pygame.time.get_ticks()
+game_over = 0  #0 no game over, 1 is winner, -1 means lost
 
 
 #Define colors
@@ -76,6 +77,7 @@ class Spaceship(pygame.sprite.Sprite):
         #Set Movement Speed
         speed = 8 
         cooldown = 500  # milliseconds
+        game_over = 0
 
         key = pygame.key.get_pressed()
         if key[pygame.K_a] and self.rect.left > 0: 
@@ -105,6 +107,8 @@ class Spaceship(pygame.sprite.Sprite):
             explosion = Explosion(self.rect.centerx, self.rect.centery, 3)
             explosion_group.add(explosion)
             self.kill()
+            game_over = -1
+        return game_over 
 
 
 #Create the bullet class
@@ -242,12 +246,25 @@ while run:
             if event.type == QUIT:
                 run = False
 
-        #update spaceship
-        spaceship.update()
-        bullet_group.update()
-        aliens_group.update()
-        alien_bullet_group.update()
-    
+
+        #If winner
+        if len(aliens_group) == 0:
+            game_over = 1
+
+        if game_over == 0: 
+            #update spaceship
+            game_over = spaceship.update()
+
+            #update sprite groups
+            bullet_group.update()
+            aliens_group.update()
+            alien_bullet_group.update()
+        else:
+            if game_over == -1:
+                draw_text("Game Over!", font40, white, int(screen_width / 2 - 100), int(screen_height / 2 + 50))
+            if game_over == 1: 
+                draw_text("You Win!", font40, white, int(screen_width / 2 - 100), int(screen_height / 2 + 50))
+
 
     if countdown > 0:
         draw_text("Get Ready!", font40, white, int(screen_width / 2 - 110), int(screen_height / 2 + 50))
