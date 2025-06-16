@@ -41,7 +41,7 @@ alien_cooldown = 500  # milliseconds
 last_alien_shot = pygame.time.get_ticks()
 countdown = 3 
 last_count = pygame.time.get_ticks()
-game_over = 0  #0 no game over, 1 is winner, -1 means lost
+game_over = 0  #0 no game over, -1 when finish
 score = 0 
 
 #Define colors
@@ -215,9 +215,12 @@ explosion_group = pygame.sprite.Group()
 
 
 def create_aliens():
+    alien_scale = max(60 - (rows * 2), 30)  # Minimum size of 30 pixels
+
     for row in range(rows):
         for col in range(cols): 
-            alien = Aliens(100 + col * 100, 100 + row * 70)
+            alien = Aliens(100 + col * 100, 100 + row * 60)
+            alien.image = pygame.transform.scale(alien.image, (alien_scale, alien_scale))
             aliens_group.add(alien)
 
 create_aliens()
@@ -252,6 +255,7 @@ while run:
 
         #Create a new batch of enemies
         if len(aliens_group) == 0 and game_over == 0:
+            rows += 1
             create_aliens()
 
         if game_over == 0: 
@@ -266,9 +270,8 @@ while run:
         else:
             if game_over == -1:
                 draw_text("Game Over!", font40, white, int(screen_width / 2 - 100), int(screen_height / 2 + 50))
-            if game_over == 1: 
-                draw_text("You Win!", font40, white, int(screen_width / 2 - 100), int(screen_height / 2 + 50))
-
+                draw_text(f"Score: {score}", font30, white, int(screen_width / 2 - 80), int(screen_height / 2 + 100))
+        
 
     if countdown > 0:
         draw_text("Get Ready!", font40, white, int(screen_width / 2 - 110), int(screen_height / 2 + 50))
@@ -276,7 +279,7 @@ while run:
         count_timer = pygame.time.get_ticks()
         if count_timer - last_count > 1000:
             countdown -= 1
-            last_count = countdown
+            last_count = count_timer
 
 
     #Update Explosion Group
