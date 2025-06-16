@@ -42,7 +42,7 @@ last_alien_shot = pygame.time.get_ticks()
 countdown = 3 
 last_count = pygame.time.get_ticks()
 game_over = 0  #0 no game over, 1 is winner, -1 means lost
-
+score = 0 
 
 #Define colors
 red = (225, 0, 0)
@@ -104,7 +104,7 @@ class Spaceship(pygame.sprite.Sprite):
             pygame.draw.rect(screen, green, (self.rect.x, (self.rect.y + 70), 
                                              int(self.rect.width * (self.health_remaining / self.health_start)), 10))
         elif self.health_remaining <= 0:
-            explosion = Explosion(self.rect.centerx, self.rect.centery, 3)
+            explosion = Explosion(self.rect.centerx, self.rect.centery, 5)
             explosion_group.add(explosion)
             self.kill()
             game_over = -1
@@ -124,10 +124,13 @@ class Bullet(pygame.sprite.Sprite):
         if self.rect.bottom < 0: 
             self.kill()
         if pygame.sprite.spritecollide(self, aliens_group, True):
+            global score
+            score += 100
             self.kill()
             explosion_fx.play()
             explosion = Explosion(self.rect.centerx, self.rect.centery, 2)
             explosion_group.add(explosion)
+
 
 
 #Create the aliens class
@@ -144,7 +147,7 @@ class Aliens(pygame.sprite.Sprite):
     def update(self):
         self.rect.x += self.move_direction * self.move_speed
         self.move_counter += self.move_speed
-        if abs(self.move_counter) > 60: 
+        if abs(self.move_counter) > 70: 
             self.move_direction *= -1 
             self.move_counter *= -1
 
@@ -221,7 +224,7 @@ create_aliens()
 
 
 #Create the spaceship object
-spaceship = Spaceship(int(screen_width / 2), screen_height - 100, 3)
+spaceship = Spaceship(int(screen_width / 2), screen_height - 100, 5)
 spaceship_group.add(spaceship)
 
 #Loop for the game to run
@@ -247,13 +250,14 @@ while run:
                 run = False
 
 
-        #If winner
-        if len(aliens_group) == 0:
-            game_over = 1
+        #Create a new batch of enemies
+        if len(aliens_group) == 0 and game_over == 0:
+            create_aliens()
 
         if game_over == 0: 
             #update spaceship
             game_over = spaceship.update()
+            draw_text(f"Score: {score}", font30, white, 10, 10)
 
             #update sprite groups
             bullet_group.update()
