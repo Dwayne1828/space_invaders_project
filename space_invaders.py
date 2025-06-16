@@ -19,6 +19,7 @@ screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption("Space Invaders")
 
 
+font30 = pygame.font.SysFont("Constantia", 20)
 font30 = pygame.font.SysFont("Constantia", 30)
 font40 = pygame.font.SysFont("Constantia", 40)
 
@@ -62,6 +63,18 @@ def draw_text(text, font, text_col, x, y):
     screen.blit(img, (x, y))
 
 
+def draw_button(text, font, color, x, y, w, h):
+    mouse = pygame.mouse.get_pos()
+    click = pygame.mouse.get_pressed()
+    button_rect = pygame.Rect(x, y, w, h)
+    pygame.draw.rect(screen, color, button_rect)
+    draw_text(text, font, (0, 0, 0), x + 10, y + 10)
+    if button_rect.collidepoint(mouse):
+        if click[0] == 1:
+            return True
+    return False
+
+
 #Create the spaceship class
 class Spaceship(pygame.sprite.Sprite):
     def __init__(self, x, y, health):
@@ -88,8 +101,8 @@ class Spaceship(pygame.sprite.Sprite):
         #Check the last shot time
         time_now = pygame.time.get_ticks()
 
-        if key[pygame.K_SPACE] and time_now - self.last_shot > cooldown:
-            #Create a bullet and add it to the bullet group
+        mouse_buttons = pygame.mouse.get_pressed()
+        if mouse_buttons[0] and time_now - self.last_shot > cooldown:
             laser_fx.play()
             bullet = Bullet(self.rect.centerx, self.rect.top)
             bullet_group.add(bullet)
@@ -205,7 +218,6 @@ class Explosion(pygame.sprite.Sprite):
             self.kill()
 
 
-
 #Create sprite groups
 spaceship_group = pygame.sprite.Group()
 bullet_group = pygame.sprite.Group()
@@ -271,7 +283,25 @@ while run:
             if game_over == -1:
                 draw_text("Game Over!", font40, white, int(screen_width / 2 - 100), int(screen_height / 2 + 50))
                 draw_text(f"Score: {score}", font30, white, int(screen_width / 2 - 80), int(screen_height / 2 + 100))
-        
+                retry = draw_button("Retry", font30, green, int(screen_width / 2 - 100), int(screen_height / 2 + 150), 100, 50)
+                exit_game = draw_button("Exit", font30, red, int(screen_width / 2 + 20), int(screen_height / 2 + 150), 100, 50)
+                if retry:
+                    # Reset game state
+                    score = 0
+                    rows = 5
+                    aliens_group.empty()
+                    bullet_group.empty()
+                    alien_bullet_group.empty()
+                    explosion_group.empty()
+                    spaceship_group.empty()
+                    spaceship = Spaceship(int(screen_width / 2), screen_height - 100, 5)
+                    spaceship_group.add(spaceship)
+                    create_aliens()
+                    game_over = 0
+                    countdown = 3
+                if exit_game:
+                    run = False
+
 
     if countdown > 0:
         draw_text("Get Ready!", font40, white, int(screen_width / 2 - 110), int(screen_height / 2 + 50))
