@@ -1,5 +1,6 @@
 import pygame 
 from pygame.locals import *
+import random
 
 # Set Frames per second
 clock = pygame.time.Clock()
@@ -12,6 +13,9 @@ screen_height = 800
 screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption("Space Invaders")
 
+#Define global variables
+rows = 5
+cols = 5
 
 #Define colors
 red = (225, 0, 0)
@@ -42,9 +46,9 @@ class Spaceship(pygame.sprite.Sprite):
         cooldown = 500  # milliseconds
 
         key = pygame.key.get_pressed()
-        if key[pygame.K_LEFT] and self.rect.left > 0: 
+        if key[pygame.K_a] and self.rect.left > 0: 
             self.rect.x -= speed
-        if key[pygame.K_RIGHT] and self.rect.right < screen_width: 
+        if key[pygame.K_d] and self.rect.right < screen_width: 
             self.rect.x += speed
 
         #Check the last shot time
@@ -74,17 +78,41 @@ class Bullet(pygame.sprite.Sprite):
     
     def update(self):
         self.rect.y -= 5
+        if self.rect.bottom < 0: 
+            self.kill()
+
+
+#Create the aliens class
+class Aliens(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load("img/alien" + str(random.randint(1, 5)) + ".png")
+        self.rect = self.image.get_rect()
+        self.rect.center = (x, y)
+    
+    def update(self):
+        pass 
+
 
 
 #Create sprite groups
 spaceship_group = pygame.sprite.Group()
 bullet_group = pygame.sprite.Group()
+aliens_group = pygame.sprite.Group()
+
+
+def create_aliens():
+    for row in range(rows):
+        for col in range(cols): 
+            alien = Aliens(100 + col * 100, 100 + row * 70)
+            aliens_group.add(alien)
+
+create_aliens()
 
 
 #Create the spaceship object
 spaceship = Spaceship(int(screen_width / 2), screen_height - 100, 3)
 spaceship_group.add(spaceship)
-
 
 #Loop for the game to run
 run = True 
@@ -101,10 +129,12 @@ while run:
     #update spaceship
     spaceship.update()
     bullet_group.update()
+    aliens_group.update()
 
     #update sprite groups
     spaceship_group.draw(screen)
     bullet_group.draw(screen)
+    aliens_group.draw(screen)
 
     pygame.display.update()
 
