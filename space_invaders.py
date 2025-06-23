@@ -75,8 +75,8 @@ def draw_button(text, font, color, x, y, w, h):
     return False
 
 
-#Create the spaceship class
-class Spaceship(pygame.sprite.Sprite):
+#Create the spaceship class    #INHERITANCE 
+class Spaceship(pygame.sprite.Sprite):     
     def __init__(self, x, y, health):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load("img/spaceship.png")
@@ -124,7 +124,7 @@ class Spaceship(pygame.sprite.Sprite):
         return game_over 
 
 
-#Create the bullet class
+#Create the bullet class      #INHERITANCE 
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, x, y):
         pygame.sprite.Sprite.__init__(self)
@@ -146,26 +146,26 @@ class Bullet(pygame.sprite.Sprite):
 
 
 
-#Create the aliens class
+#Create the aliens class       #INHERITANCE 
 class Aliens(pygame.sprite.Sprite):
     def __init__(self, x, y):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load("img/alien" + str(random.randint(1, 5)) + ".png")
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
-        self.move_direction = 1
-        self.move_counter = 0 
-        self.move_speed = 2
+        self._move_direction = 1
+        self._move_counter = 0 
+        self._move_speed = 2
     
     def update(self):
-        self.rect.x += self.move_direction * self.move_speed
-        self.move_counter += self.move_speed
-        if abs(self.move_counter) > 70: 
-            self.move_direction *= -1 
-            self.move_counter *= -1
+        self.rect.x += self._move_direction * self._move_speed
+        self._move_counter += self._move_speed
+        if abs(self._move_counter) > 70: 
+            self._move_direction *= -1 
+            self._move_counter *= -1
 
 
-#Create the bullet class
+#Create the bullet class        #INHERITANCE 
 class AlienBullets(pygame.sprite.Sprite):
     def __init__(self, x, y):
         pygame.sprite.Sprite.__init__(self)
@@ -185,7 +185,7 @@ class AlienBullets(pygame.sprite.Sprite):
             explosion_group.add(explosion)
 
 
-#Explosion class
+#Explosion class         #INHERITANCE 
 class Explosion(pygame.sprite.Sprite):
     def __init__(self, x, y, size):
         pygame.sprite.Sprite.__init__(self)
